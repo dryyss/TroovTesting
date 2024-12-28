@@ -1,27 +1,37 @@
 module.exports = {
-  mode: 'jit',
-  purge: [
+  content: [
     './components/**/*.{vue,js}',
     './layouts/**/*.vue',
     './pages/**/*.vue',
     './plugins/**/*.{js,ts}',
     './nuxt.config.{js,ts}',
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          50: '#e6fff9',
+          100: '#b3ffed',
+          200: '#80ffe1',
+          300: '#4dffd5',
+          400: '#1affc9',
+          500: '#00E5B0',
+          600: '#00b38a',
+          700: '#008066',
+          800: '#004d3d',
+          900: '#001a15',
+        },
+        secondary: {
+          50: '#e5f6ff',
+          100: '#b3e5ff',
+          200: '#80d4ff',
+          300: '#4dc3ff',
+          400: '#1ab2ff',
+          500: '#0091e5',
+          600: '#0071b3',
+          700: '#005280',
+          800: '#00324d',
+          900: '#00111a',
         },
       },
       fontFamily: {
