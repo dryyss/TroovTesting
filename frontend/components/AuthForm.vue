@@ -1,28 +1,38 @@
 <template>
   <div class="auth-form">
-    <b-form @submit.prevent="onSubmit">
-      <b-form-group label="Email:" label-for="email">
-        <b-form-input
+    <form @submit.prevent="onSubmit" class="space-y-6">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700"
+          >Email</label
+        >
+        <input
           id="email"
           v-model="form.email"
           type="email"
           required
+          class="input-field mt-1"
           placeholder="Entrez votre email"
         />
-      </b-form-group>
+      </div>
 
-      <b-form-group label="Mot de passe:" label-for="password">
-        <b-form-input
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700"
+          >Mot de passe</label
+        >
+        <input
           id="password"
           v-model="form.password"
           type="password"
           required
+          class="input-field mt-1"
           placeholder="Entrez votre mot de passe"
         />
-      </b-form-group>
+      </div>
 
-      <b-button type="submit" variant="primary">{{ submitText }}</b-button>
-    </b-form>
+      <button type="submit" class="btn-primary w-full">
+        {{ submitText }}
+      </button>
+    </form>
   </div>
 </template>
 

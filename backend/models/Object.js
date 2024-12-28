@@ -9,11 +9,30 @@ const objectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["todo", "in_progress", "done"],
+    default: "todo",
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
+  appointments: [
+    {
+      date: {
+        type: Date,
+        required: true,
+      },
+      description: String,
+      status: {
+        type: String,
+        enum: ["pending", "confirmed", "cancelled"],
+        default: "pending",
+      },
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,
