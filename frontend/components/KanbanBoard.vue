@@ -1,53 +1,87 @@
 <template>
-  <div class="kanban-board">
-    <div class="d-flex justify-content-between">
-      <div v-for="status in statuses" :key="status.value" class="kanban-column">
-        <h3 class="column-title">{{ status.label }}</h3>
-        <div class="column-content">
-          <draggable
-            v-model="columns[status.value]"
-            group="objects"
-            @change="onDragChange"
+  <div class="p-6">
+    <div class="flex space-x-4 overflow-x-auto">
+      <div
+        v-for="status in statuses"
+        :key="status.value"
+        class="flex-none w-80 bg-gray-50 rounded-lg p-4"
+      >
+        <h3 class="text-lg font-medium mb-4">{{ status.label }}</h3>
+        <draggable
+          v-model="columns[status.value]"
+          group="objects"
+          class="space-y-3 min-h-[200px]"
+          @change="onDragChange"
+        >
+          <div
+            v-for="object in columns[status.value]"
+            :key="object._id"
+            class="bg-white p-4 rounded-lg shadow cursor-move hover:shadow-md transition-shadow"
           >
-            <div
-              v-for="object in columns[status.value]"
-              :key="object._id"
-              class="object-card"
-            >
-              <b-card>
-                <h5>{{ object.name }}</h5>
-                <p>{{ object.description }}</p>
-                <div class="card-actions">
-                  <b-button
-                    size="sm"
-                    variant="outline-primary"
-                    @click="openAppointmentModal(object)"
-                  >
-                    Rendez-vous
-                  </b-button>
-                </div>
-              </b-card>
+            <h4 class="font-medium">{{ object.name }}</h4>
+            <p class="text-sm text-gray-600 mt-1">{{ object.description }}</p>
+            <div class="mt-3">
+              <button
+                class="text-sm px-3 py-1 text-primary-600 border border-primary-600 rounded-full hover:bg-primary-50"
+                @click="openAppointmentModal(object)"
+              >
+                Rendez-vous
+              </button>
             </div>
-          </draggable>
-        </div>
+          </div>
+        </draggable>
       </div>
     </div>
 
     <!-- Modal pour les rendez-vous -->
-    <b-modal
-      v-model="showAppointmentModal"
-      title="Planifier un rendez-vous"
-      @ok="saveAppointment"
-    >
-      <b-form>
-        <b-form-group label="Date et heure:">
-          <b-form-datepicker v-model="appointmentForm.date" :min="new Date()" />
-        </b-form-group>
-        <b-form-group label="Description:">
-          <b-form-textarea v-model="appointmentForm.description" rows="3" />
-        </b-form-group>
-      </b-form>
-    </b-modal>
+    <div v-if="showAppointmentModal" class="fixed inset-0 z-50">
+      <div class="absolute inset-0 bg-gray-500 bg-opacity-75"></div>
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+          <h3 class="text-lg font-medium mb-4">Planifier un rendez-vous</h3>
+          <form @submit.prevent="saveAppointment">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">
+                  Date et heure
+                </label>
+                <input
+                  v-model="appointmentForm.date"
+                  type="datetime-local"
+                  class="mt-1 input-field"
+                  :min="new Date().toISOString().slice(0, 16)"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">
+                  Description
+                </label>
+                <textarea
+                  v-model="appointmentForm.description"
+                  rows="3"
+                  class="mt-1 input-field"
+                ></textarea>
+              </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+              <button
+                type="button"
+                class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                @click="showAppointmentModal = false"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 text-sm text-white bg-primary-600 hover:bg-primary-700 rounded-md"
+              >
+                Enregistrer
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -95,52 +129,14 @@ export default {
       try {
         await this.$axios.post(
           `/api/objects/${this.selectedObject._id}/appointments`,
-          {
-            date: this.appointmentForm.date,
-            description: this.appointmentForm.description,
-          }
+          this.appointmentForm
         )
-        this.$bvToast.toast('Rendez-vous planifié avec succès', {
-          title: 'Succès',
-          variant: 'success',
-        })
+        this.$toast.success('Rendez-vous planifié avec succès')
+        this.showAppointmentModal = false
       } catch (error) {
-        this.$bvToast.toast('Erreur lors de la planification', {
-          title: 'Erreur',
-          variant: 'danger',
-        })
+        this.$toast.error('Erreur lors de la planification')
       }
     },
   },
 }
 </script>
-
-<style scoped>
-.kanban-board {
-  padding: 20px;
-  overflow-x: auto;
-}
-
-.kanban-column {
-  min-width: 300px;
-  margin: 0 10px;
-  background: #f5f5f5;
-  border-radius: 4px;
-  padding: 10px;
-}
-
-.column-title {
-  padding: 10px;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-}
-
-.column-content {
-  min-height: 200px;
-  padding: 10px;
-}
-
-.object-card {
-  margin-bottom: 10px;
-}
-</style>
