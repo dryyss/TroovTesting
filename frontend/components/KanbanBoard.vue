@@ -1,53 +1,26 @@
 <template>
-  <div class="kanban-board">
-    <div class="d-flex justify-content-between">
-      <div v-for="status in statuses" :key="status.value" class="kanban-column">
-        <h3 class="column-title">{{ status.label }}</h3>
-        <div class="column-content">
-          <draggable
-            v-model="columns[status.value]"
-            group="objects"
-            @change="onDragChange"
+  <div class="flex space-x-4 p-4 overflow-x-auto">
+    <div v-for="column in columns" :key="column.id" class="flex-none w-80">
+      <div class="bg-gray-100 rounded-lg p-4">
+        <h3 class="text-lg font-medium mb-4">{{ column.title }}</h3>
+        <draggable
+          v-model="column.items"
+          group="items"
+          :animation="200"
+          ghost-class="ghost"
+          class="space-y-2 min-h-[200px]"
+        >
+          <div
+            v-for="item in column.items"
+            :key="item.id"
+            class="card cursor-move"
           >
-            <div
-              v-for="object in columns[status.value]"
-              :key="object._id"
-              class="object-card"
-            >
-              <b-card>
-                <h5>{{ object.name }}</h5>
-                <p>{{ object.description }}</p>
-                <div class="card-actions">
-                  <b-button
-                    size="sm"
-                    variant="outline-primary"
-                    @click="openAppointmentModal(object)"
-                  >
-                    Rendez-vous
-                  </b-button>
-                </div>
-              </b-card>
-            </div>
-          </draggable>
-        </div>
+            <h4 class="font-medium">{{ item.title }}</h4>
+            <p class="text-sm text-gray-600">{{ item.description }}</p>
+          </div>
+        </draggable>
       </div>
     </div>
-
-    <!-- Modal pour les rendez-vous -->
-    <b-modal
-      v-model="showAppointmentModal"
-      title="Planifier un rendez-vous"
-      @ok="saveAppointment"
-    >
-      <b-form>
-        <b-form-group label="Date et heure:">
-          <b-form-datepicker v-model="appointmentForm.date" :min="new Date()" />
-        </b-form-group>
-        <b-form-group label="Description:">
-          <b-form-textarea v-model="appointmentForm.description" rows="3" />
-        </b-form-group>
-      </b-form>
-    </b-modal>
   </div>
 </template>
 
@@ -61,86 +34,54 @@ export default {
   },
   data() {
     return {
-      statuses: [
-        { value: 'todo', label: 'À faire' },
-        { value: 'in_progress', label: 'En cours' },
-        { value: 'done', label: 'Terminé' },
+      columns: [
+        {
+          id: 1,
+          title: 'À faire',
+          items: [
+            {
+              id: 1,
+              title: 'Tâche 1',
+              description: 'Description de la tâche 1',
+            },
+            {
+              id: 2,
+              title: 'Tâche 2',
+              description: 'Description de la tâche 2',
+            },
+          ],
+        },
+        {
+          id: 2,
+          title: 'En cours',
+          items: [
+            {
+              id: 3,
+              title: 'Tâche 3',
+              description: 'Description de la tâche 3',
+            },
+          ],
+        },
+        {
+          id: 3,
+          title: 'Terminé',
+          items: [
+            {
+              id: 4,
+              title: 'Tâche 4',
+              description: 'Description de la tâche 4',
+            },
+          ],
+        },
       ],
-      columns: {
-        todo: [],
-        in_progress: [],
-        done: [],
-      },
-      showAppointmentModal: false,
-      selectedObject: null,
-      appointmentForm: {
-        date: '',
-        description: '',
-      },
     }
-  },
-  methods: {
-    async onDragChange({ added, moved }) {
-      if (added) {
-        const object = added.element
-        const newStatus = added.newIndex
-        await this.updateObjectStatus(object._id, newStatus)
-      }
-    },
-    openAppointmentModal(object) {
-      this.selectedObject = object
-      this.showAppointmentModal = true
-    },
-    async saveAppointment() {
-      try {
-        await this.$axios.post(
-          `/api/objects/${this.selectedObject._id}/appointments`,
-          {
-            date: this.appointmentForm.date,
-            description: this.appointmentForm.description,
-          }
-        )
-        this.$bvToast.toast('Rendez-vous planifié avec succès', {
-          title: 'Succès',
-          variant: 'success',
-        })
-      } catch (error) {
-        this.$bvToast.toast('Erreur lors de la planification', {
-          title: 'Erreur',
-          variant: 'danger',
-        })
-      }
-    },
   },
 }
 </script>
 
 <style scoped>
-.kanban-board {
-  padding: 20px;
-  overflow-x: auto;
-}
-
-.kanban-column {
-  min-width: 300px;
-  margin: 0 10px;
-  background: #f5f5f5;
-  border-radius: 4px;
-  padding: 10px;
-}
-
-.column-title {
-  padding: 10px;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-}
-
-.column-content {
-  min-height: 200px;
-  padding: 10px;
-}
-
-.object-card {
-  margin-bottom: 10px;
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
 }
 </style>
