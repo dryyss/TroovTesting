@@ -43,11 +43,19 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env.API_URL,
+    baseURL: process.env.API_URL || 'http://localhost:3001',
+    credentials: true,
+    debug: process.env.NODE_ENV !== 'production',
   },
 
   // Auth module configuration
   auth: {
+    redirect: {
+      login: '/login',
+      logout: '/login',
+      callback: '/login',
+      home: '/dashboard',
+    },
     strategies: {
       local: {
         token: {
@@ -58,6 +66,7 @@ export default {
         },
         user: {
           property: 'user',
+          autoFetch: true,
         },
         endpoints: {
           login: { url: '/api/auth/login', method: 'post' },
@@ -66,6 +75,8 @@ export default {
         },
       },
     },
+    watchLoggedIn: true,
+    rewriteRedirects: true,
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
