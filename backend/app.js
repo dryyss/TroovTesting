@@ -8,10 +8,18 @@ const app = express();
 // Configuration CORS
 app.use(
   cors({
-    origin: true,
+    origin: function (origin, callback) {
+      // Autoriser les requêtes sans origine (comme les appels d'API)
+      if (!origin) return callback(null, true);
+
+      // Vérifier si l'origine commence par http://localhost:
+      if (origin.startsWith("http://localhost:")) {
+        return callback(null, true);
+      }
+
+      callback(new Error("Non autorisé par CORS"));
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -43,7 +51,10 @@ const PORT = process.env.PORT || 3001;
 
 // Connexion MongoDB avec options
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("Connecté à MongoDB");
     app.listen(PORT, () => {

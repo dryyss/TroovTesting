@@ -27,78 +27,61 @@ export default {
   css: ['@/assets/css/main.css', 'vue-toastification/dist/index.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-    { src: '~/plugins/toast.js', mode: 'client' },
-    { src: '~/plugins/auth.js', mode: 'client' },
-  ],
+  plugins: [{ src: '~/plugins/toast.js', mode: 'client' }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
   // Modules for dev and build: https://go.nuxtjs.dev/config-modules
-  buildModules: [
-    // '@nuxtjs/eslint-module',
-    '@nuxtjs/tailwindcss',
-  ],
+  buildModules: ['@nuxtjs/tailwindcss'],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: ['@nuxtjs/axios', '@nuxtjs/auth-next'],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env.API_URL || 'http://localhost:3001',
+    baseURL:
+      process.env.NODE_ENV === 'production'
+        ? 'https://votre-api-production.com'
+        : 'http://localhost:3001',
     credentials: true,
-    withCredentials: true,
-    debug: process.env.NODE_ENV !== 'production',
-    proxy: false,
-    retry: { retries: 3 },
+    headers: {
+      common: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
   },
 
   // Auth module configuration
   auth: {
+    strategies: {
+      local: {
+        token: {
+          property: 'token',
+          global: true,
+          required: true,
+          type: 'Bearer',
+        },
+        user: {
+          property: 'user',
+          autoFetch: true,
+        },
+        endpoints: {
+          login: { url: '/api/auth/login', method: 'post' },
+          logout: { url: '/api/auth/logout', method: 'post' },
+          user: { url: '/api/auth/profile', method: 'get' },
+        },
+      },
+    },
     redirect: {
       login: '/login',
       logout: '/login',
       callback: '/login',
       home: '/dashboard',
     },
-    strategies: {
-      local: {
-        scheme: 'local',
-        endpoints: {
-          login: {
-            url: '/api/auth/login',
-            method: 'post',
-            propertyName: 'token',
-          },
-          logout: {
-            url: '/api/auth/logout',
-            method: 'post',
-          },
-          user: {
-            url: '/api/auth/user',
-            method: 'get',
-            propertyName: 'user',
-          },
-        },
-        token: {
-          property: 'token',
-          required: true,
-          type: 'Bearer',
-          maxAge: 604800,
-        },
-        user: {
-          property: 'user',
-          autoFetch: true,
-        },
-      },
-    },
-    cookie: {
-      options: {
-        secure: process.env.NODE_ENV === 'production',
-      },
-    },
-    plugins: ['~/plugins/auth.js'],
+    rewriteRedirects: true,
+    resetOnError: true,
   },
 
   // Server configuration
