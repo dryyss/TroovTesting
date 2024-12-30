@@ -37,7 +37,12 @@ exports.register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      user: user.toJSON(),
+      user: {
+        _id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
       token,
     });
   } catch (error) {
@@ -73,16 +78,17 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Mettre à jour la date de dernière connexion
-    user.lastLogin = new Date();
-    await user.save();
-
     // Générer le token
     const token = generateToken(user._id);
 
     res.json({
       success: true,
-      user: user.toJSON(),
+      user: {
+        _id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
       token,
     });
   } catch (error) {
@@ -95,10 +101,26 @@ exports.login = async (req, res) => {
   }
 };
 
-// Obtenir le profil de l'utilisateur connecté
+// Déconnexion
+exports.logout = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      message: "Déconnexion réussie",
+    });
+  } catch (error) {
+    console.error("Erreur lors de la déconnexion:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la déconnexion",
+    });
+  }
+};
+
+// Obtenir le profil
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select("-password");
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -107,7 +129,7 @@ exports.getProfile = async (req, res) => {
     }
     res.json({
       success: true,
-      user: user.toJSON(),
+      user,
     });
   } catch (error) {
     console.error("Erreur lors de la récupération du profil:", error);
