@@ -8,10 +8,18 @@ const app = express();
 // Configuration CORS
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: function (origin, callback) {
+      // Autoriser les requêtes sans origine (comme les appels d'API)
+      if (!origin) return callback(null, true);
+
+      // Vérifier si l'origine commence par http://localhost:
+      if (origin.startsWith("http://localhost:")) {
+        return callback(null, true);
+      }
+
+      callback(new Error("Non autorisé par CORS"));
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 

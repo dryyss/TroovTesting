@@ -27,20 +27,30 @@ export default {
   css: ['@/assets/css/main.css', 'vue-toastification/dist/index.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: '@/plugins/toast.js', mode: 'client' }],
+  plugins: [{ src: '~/plugins/toast.js', mode: 'client' }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
   // Modules for dev and build: https://go.nuxtjs.dev/config-modules
-  buildModules: ['@nuxtjs/eslint-module', '@nuxtjs/tailwindcss'],
+  buildModules: ['@nuxtjs/tailwindcss'],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: ['@nuxtjs/axios', '@nuxtjs/auth-next'],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env.API_URL,
+    baseURL:
+      process.env.NODE_ENV === 'production'
+        ? 'https://votre-api-production.com'
+        : 'http://localhost:3001',
+    credentials: true,
+    headers: {
+      common: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
   },
 
   // Auth module configuration
@@ -55,16 +65,40 @@ export default {
         },
         user: {
           property: 'user',
+          autoFetch: true,
         },
         endpoints: {
           login: { url: '/api/auth/login', method: 'post' },
           logout: { url: '/api/auth/logout', method: 'post' },
-          user: { url: '/api/auth/user', method: 'get' },
+          user: { url: '/api/auth/profile', method: 'get' },
+        },
+      },
+    },
+    redirect: {
+      login: '/login',
+      logout: '/login',
+      callback: '/login',
+      home: '/dashboard',
+    },
+    rewriteRedirects: true,
+    resetOnError: true,
+  },
+
+  // Server configuration
+  server: {
+    port: 3000,
+    host: 'localhost',
+  },
+
+  // Build Configuration: https://go.nuxtjs.dev/config-build
+  build: {
+    postcss: {
+      postcssOptions: {
+        plugins: {
+          tailwindcss: {},
+          autoprefixer: {},
         },
       },
     },
   },
-
-  // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
 }

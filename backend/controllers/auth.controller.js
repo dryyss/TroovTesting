@@ -1,5 +1,6 @@
-const User = require("../models/user.model");
+const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 // Génération du token JWT
 const generateToken = (userId) => {
@@ -17,7 +18,6 @@ exports.register = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
-        success: false,
         message: "Un utilisateur avec cet email existe déjà",
       });
     }
@@ -36,16 +36,18 @@ exports.register = async (req, res) => {
     const token = generateToken(user._id);
 
     res.status(201).json({
-      success: true,
-      user: user.toJSON(),
       token,
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
     });
   } catch (error) {
     console.error("Erreur lors de l'inscription:", error);
     res.status(500).json({
-      success: false,
       message: "Erreur lors de l'inscription",
-      error: error.message,
     });
   }
 };
@@ -59,7 +61,6 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
-        success: false,
         message: "Email ou mot de passe incorrect",
       });
     }
@@ -68,53 +69,66 @@ exports.login = async (req, res) => {
     const isValidPassword = await user.comparePassword(password);
     if (!isValidPassword) {
       return res.status(401).json({
-        success: false,
         message: "Email ou mot de passe incorrect",
       });
     }
-
-    // Mettre à jour la date de dernière connexion
-    user.lastLogin = new Date();
-    await user.save();
 
     // Générer le token
     const token = generateToken(user._id);
 
     res.json({
-      success: true,
-      user: user.toJSON(),
       token,
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
     });
   } catch (error) {
     console.error("Erreur lors de la connexion:", error);
     res.status(500).json({
-      success: false,
       message: "Erreur lors de la connexion",
-      error: error.message,
     });
   }
 };
 
-// Obtenir le profil de l'utilisateur connecté
+// Déconnexion
+exports.logout = async (req, res) => {
+  try {
+    res.json({
+      message: "Déconnexion réussie",
+    });
+  } catch (error) {
+    console.error("Erreur lors de la déconnexion:", error);
+    res.status(500).json({
+      message: "Erreur lors de la déconnexion",
+    });
+  }
+};
+
+// Obtenir le profil
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select("-password");
     if (!user) {
       return res.status(404).json({
-        success: false,
         message: "Utilisateur non trouvé",
       });
     }
+
     res.json({
-      success: true,
-      user: user.toJSON(),
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
     });
   } catch (error) {
     console.error("Erreur lors de la récupération du profil:", error);
     res.status(500).json({
-      success: false,
       message: "Erreur lors de la récupération du profil",
-      error: error.message,
     });
   }
 };
