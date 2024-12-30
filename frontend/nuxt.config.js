@@ -4,101 +4,75 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: "Troov - Gestion d'objets",
+    title: 'Troov',
+    htmlAttrs: {
+      lang: 'fr'
+    },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      {
-        hid: 'description',
-        name: 'description',
-        content: "Application de gestion d'objets",
-      },
+      { hid: 'description', name: 'description', content: '' },
+      { name: 'format-detection', content: 'telephone=no' }
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-      },
-    ],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: ['@/assets/css/main.css', 'vue-toastification/dist/index.css'],
+  css: ['@/assets/css/main.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: '~/plugins/toast.js', mode: 'client' }],
+  plugins: [{ src: '@/plugins/toast', mode: 'client' }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
   // Modules for dev and build: https://go.nuxtjs.dev/config-modules
-  buildModules: ['@nuxtjs/tailwindcss'],
+  buildModules: [
+    // '@nuxtjs/eslint-module',
+    '@nuxtjs/tailwindcss'
+  ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: ['@nuxtjs/axios', '@nuxtjs/auth-next'],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL:
-      process.env.NODE_ENV === 'production'
-        ? 'https://votre-api-production.com'
-        : 'http://localhost:3001',
+    baseURL: process.env.API_URL || 'http://localhost:3001',
     credentials: true,
-    headers: {
-      common: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    },
+    debug: process.env.NODE_ENV !== 'production'
   },
 
   // Auth module configuration
   auth: {
+    redirect: {
+      login: '/login',
+      logout: '/login',
+      callback: '/login',
+      home: '/dashboard'
+    },
     strategies: {
       local: {
         token: {
           property: 'token',
           global: true,
           required: true,
-          type: 'Bearer',
+          type: 'Bearer'
         },
         user: {
           property: 'user',
-          autoFetch: true,
+          autoFetch: true
         },
         endpoints: {
           login: { url: '/api/auth/login', method: 'post' },
           logout: { url: '/api/auth/logout', method: 'post' },
-          user: { url: '/api/auth/profile', method: 'get' },
-        },
-      },
+          user: { url: '/api/auth/profile', method: 'get' }
+        }
+      }
     },
-    redirect: {
-      login: '/login',
-      logout: '/login',
-      callback: '/login',
-      home: '/dashboard',
-    },
-    rewriteRedirects: true,
-    resetOnError: true,
-  },
-
-  // Server configuration
-  server: {
-    port: 3000,
-    host: 'localhost',
+    watchLoggedIn: true,
+    rewriteRedirects: true
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-    postcss: {
-      postcssOptions: {
-        plugins: {
-          tailwindcss: {},
-          autoprefixer: {},
-        },
-      },
-    },
-  },
+  build: {}
 }

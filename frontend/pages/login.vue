@@ -16,48 +16,65 @@
         </p>
       </div>
 
-      <form class="space-y-6" @submit.prevent="handleLogin">
-        <!-- Message d'erreur -->
-        <div
-          v-if="error"
-          class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md"
-        >
-          {{ error }}
+      <!-- Message d'erreur général -->
+      <div v-if="error" class="rounded-md bg-red-50 p-4 mb-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg
+              class="h-5 w-5 text-red-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-red-700">{{ error }}</p>
+          </div>
         </div>
+      </div>
 
-        <!-- Email -->
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <div class="mt-1">
+      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
+        <div class="rounded-md shadow-sm space-y-4">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700"
+              >Email</label
+            >
             <input
               id="email"
               v-model="form.email"
               type="email"
               required
-              class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-              :class="{ 'border-red-300': errors.email }"
+              :class="['input-field mt-1', { 'border-red-500': errors.email }]"
+              placeholder="Email"
+              @input="clearError('email')"
             />
             <p v-if="errors.email" class="mt-1 text-sm text-red-600">
               {{ errors.email }}
             </p>
           </div>
-        </div>
 
-        <!-- Mot de passe -->
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700">
-            Mot de passe
-          </label>
-          <div class="mt-1">
+          <div>
+            <label
+              for="password"
+              class="block text-sm font-medium text-gray-700"
+              >Mot de passe</label
+            >
             <input
               id="password"
               v-model="form.password"
               type="password"
               required
-              class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-              :class="{ 'border-red-300': errors.password }"
+              :class="[
+                'input-field mt-1',
+                { 'border-red-500': errors.password },
+              ]"
+              placeholder="Mot de passe"
+              @input="clearError('password')"
             />
             <p v-if="errors.password" class="mt-1 text-sm text-red-600">
               {{ errors.password }}
@@ -85,7 +102,7 @@
           <button
             type="submit"
             :disabled="loading"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
           >
             <svg
               v-if="loading"
@@ -108,7 +125,36 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
+            {{ loading ? 'Connexion...' : 'Se connecter' }}
+          </button>
+        </div>
+
+        <div class="flex items-center justify-center space-x-4">
+          <button
+            type="button"
+            class="flex items-center justify-center w-12 h-12 rounded-full border-2 border-gray-300 hover:border-gray-400"
+          >
+            <img
+              src="~/assets/images/google.svg"
+              alt="Google"
+              class="w-6 h-6"
+            />
+          </button>
+          <button
+            type="button"
+            class="flex items-center justify-center w-12 h-12 rounded-full border-2 border-gray-300 hover:border-gray-400"
+          >
+            <img src="~/assets/images/apple.svg" alt="Apple" class="w-6 h-6" />
+          </button>
+          <button
+            type="button"
+            class="flex items-center justify-center w-12 h-12 rounded-full border-2 border-gray-300 hover:border-gray-400"
+          >
+            <img
+              src="~/assets/images/facebook.svg"
+              alt="Facebook"
+              class="w-6 h-6"
+            />
           </button>
         </div>
       </form>
@@ -129,27 +175,55 @@ export default {
       },
       loading: false,
       error: null,
-      errors: {},
+      errors: {
+        email: '',
+        password: '',
+      },
+      loading: false,
+      error: null,
+      errors: {
+        email: '',
+        password: '',
+      },
     }
   },
   methods: {
+    clearError(field) {
+      if (field) {
+        this.errors[field] = ''
+      }
+      this.error = null
+    },
+    validateForm() {
+      let isValid = true
+      this.errors = {
+        email: '',
+        password: '',
+      }
+
+      if (!this.form.email) {
+        this.errors.email = "L'email est requis"
+        isValid = false
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email)) {
+        this.errors.email = "L'email n'est pas valide"
+        isValid = false
+      }
+
+      if (!this.form.password) {
+        this.errors.password = 'Le mot de passe est requis'
+        isValid = false
+      }
+
+      return isValid
+    },
     async handleLogin() {
       try {
+        if (!this.validateForm()) {
+          return
+        }
+
         this.loading = true
         this.error = null
-        this.errors = {}
-
-        // Validation basique
-        if (!this.form.email) {
-          this.errors.email = "L'email est requis"
-          this.loading = false
-          return
-        }
-        if (!this.form.password) {
-          this.errors.password = 'Le mot de passe est requis'
-          this.loading = false
-          return
-        }
 
         await this.$auth.loginWith('local', {
           data: {
@@ -158,13 +232,21 @@ export default {
           },
         })
 
-        this.$toast.success('Connexion réussie')
-        await this.$router.push('/dashboard')
+        // Force le rafraîchissement des données utilisateur
+        await this.$auth.fetchUser()
+
+        this.$router.push('/dashboard')
       } catch (error) {
         console.error('Erreur de connexion:', error)
         this.error =
           error.response?.data?.message || 'Email ou mot de passe incorrect'
-        this.$toast.error(this.error)
+
+        if (error.response?.data?.errors) {
+          this.errors = {
+            ...this.errors,
+            ...error.response.data.errors,
+          }
+        }
       } finally {
         this.loading = false
       }
