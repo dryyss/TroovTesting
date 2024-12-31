@@ -3,16 +3,10 @@ export const state = () => ({})
 export const mutations = {}
 
 export const actions = {
+  // Cette action sera appelée au démarrage de Nuxt
   async nuxtServerInit({ dispatch }, { req }) {
-    if (req.headers.cookie) {
-      try {
-        await dispatch('auth/fetch')
-      } catch (error) {
-        console.error(
-          'Erreur lors de la récupération des données utilisateur:',
-          error
-        )
-      }
+    if (this.$auth.loggedIn) {
+      await this.$auth.fetchUser()
     }
   },
 }
