@@ -1,5 +1,10 @@
+/** * Composant de formulaire pour la création et l'édition de tâches * *
+Fonctionnalités : * - Validation des champs en temps réel * - Gestion des
+erreurs de saisie * - Support de la création et de l'édition * - Confirmation
+avant suppression */
 <template>
   <form @submit.prevent="onSubmit" class="space-y-4">
+    <!-- Champ du titre avec validation -->
     <div>
       <label for="title" class="block text-sm font-medium text-gray-700">
         Titre <span class="text-red-500">*</span>
@@ -19,6 +24,7 @@
       </p>
     </div>
 
+    <!-- Champ de description -->
     <div>
       <label for="description" class="block text-sm font-medium text-gray-700">
         Description
@@ -32,6 +38,7 @@
       ></textarea>
     </div>
 
+    <!-- Sélection du statut -->
     <div>
       <label for="status" class="block text-sm font-medium text-gray-700">
         Statut
@@ -47,6 +54,7 @@
       </select>
     </div>
 
+    <!-- Actions du formulaire -->
     <div class="mt-5 flex justify-end space-x-3">
       <button
         v-if="task"
@@ -77,12 +85,17 @@
 <script>
 export default {
   name: 'TaskForm',
+
   props: {
+    /**
+     * Tâche à éditer. Si null, le formulaire est en mode création
+     */
     task: {
       type: Object,
       default: null,
     },
   },
+
   data() {
     return {
       form: {
@@ -95,12 +108,20 @@ export default {
       },
     }
   },
+
   computed: {
+    /**
+     * Vérifie si le formulaire est valide pour la soumission
+     */
     isValid() {
       return this.form.title.length >= 3 && !this.errors.title
     },
   },
+
   watch: {
+    /**
+     * Observe les changements de la prop task pour mettre à jour le formulaire
+     */
     task: {
       immediate: true,
       handler(newTask) {
@@ -120,7 +141,12 @@ export default {
       },
     },
   },
+
   methods: {
+    /**
+     * Valide le titre de la tâche en temps réel
+     * Minimum 3 caractères requis
+     */
     validateTitle() {
       if (this.form.title.length < 3) {
         this.errors.title = 'Le titre doit contenir au moins 3 caractères'
@@ -128,6 +154,11 @@ export default {
         this.errors.title = ''
       }
     },
+
+    /**
+     * Gère la soumission du formulaire
+     * Émet l'événement 'submit' avec les données du formulaire
+     */
     onSubmit() {
       if (!this.isValid) return
 

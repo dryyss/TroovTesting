@@ -177,8 +177,18 @@
             @click="closeTaskModal"
             class="text-gray-400 hover:text-gray-500"
           >
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -199,13 +209,13 @@ import TaskForm from './TaskForm.vue'
 export default {
   name: 'Kanban',
   components: {
-    TaskForm
+    TaskForm,
   },
   data() {
     return {
       showTaskModal: false,
       editingTask: null,
-      tasks: []
+      tasks: [],
     }
   },
   computed: {
@@ -237,7 +247,7 @@ export default {
       this.currentTask = {
         title: '',
         description: '',
-        status: 'todo'
+        status: 'todo',
       }
       this.showTaskModal = true
     },
@@ -247,7 +257,7 @@ export default {
         ...task,
         title: task.title || '',
         description: task.description || '',
-        status: task.status || 'todo'
+        status: task.status || 'todo',
       }
       this.showTaskModal = true
     },
@@ -268,7 +278,7 @@ export default {
             `/api/tasks/${taskData._id}`,
             taskData
           )
-          const index = this.tasks.findIndex(t => t._id === taskData._id)
+          const index = this.tasks.findIndex((t) => t._id === taskData._id)
           if (index !== -1) {
             this.tasks.splice(index, 1, response.task)
           }
