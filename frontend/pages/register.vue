@@ -9,7 +9,6 @@
           Ou
           <nuxt-link
             to="/login"
-            class="font-medium text-emerald-500 hover:text-emerald-600"
             class="font-medium text-primary-500 hover:text-primary-600"
           >
             connectez-vous à votre compte

@@ -1,6 +1,6 @@
 module.exports = {
   content: [
-    './components/**/*.{vue,js}',
+    './components/**/*.{js,vue,ts}',
     './layouts/**/*.vue',
     './pages/**/*.vue',
     './plugins/**/*.{js,ts}',
@@ -10,34 +10,19 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          50: '#e6fff9',
-          100: '#b3ffed',
-          200: '#80ffe1',
-          300: '#4dffd5',
-          400: '#1affc9',
+          50: '#E5FFF9',
+          100: '#B3FFE6',
+          200: '#80FFD9',
+          300: '#4DFFCC',
+          400: '#1AFFBF',
           500: '#00E5B0',
-          600: '#00b38a',
+          600: '#00B38A',
           700: '#008066',
-          800: '#004d3d',
-          900: '#001a15',
+          800: '#004D40',
+          900: '#001A15',
         },
-        secondary: {
-          50: '#e5f6ff',
-          100: '#b3e5ff',
-          200: '#80d4ff',
-          300: '#4dc3ff',
-          400: '#1ab2ff',
-          500: '#0091e5',
-          600: '#0071b3',
-          700: '#005280',
-          800: '#00324d',
-          900: '#00111a',
-        },
-      },
-      fontFamily: {
-        sans: ['Inter', 'sans-serif'],
       },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [],
 }
