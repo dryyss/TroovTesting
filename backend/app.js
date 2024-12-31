@@ -8,10 +8,18 @@ const app = express();
 // Configuration CORS
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: function (origin, callback) {
+      // Autoriser les requêtes sans origine (comme les appels d'API)
+      if (!origin) return callback(null, true);
+
+      // Vérifier si l'origine commence par http://localhost:
+      if (origin.startsWith("http://localhost:")) {
+        return callback(null, true);
+      }
+
+      callback(new Error("Non autorisé par CORS"));
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -20,6 +28,8 @@ app.use(express.json());
 
 // Importer les routes
 const authRoutes = require("./routes/auth.routes");
+const taskRoutes = require("./routes/task.routes");
+const eventRoutes = require("./routes/event.routes");
 
 // Routes de base
 app.get("/", (req, res) => {
@@ -28,6 +38,8 @@ app.get("/", (req, res) => {
 
 // Utiliser les routes
 app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/events", eventRoutes);
 
 // Gestion des erreurs globale
 app.use((err, req, res, next) => {
