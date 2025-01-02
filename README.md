@@ -58,7 +58,7 @@ Cette application web a été développée dans le cadre d'un test technique pou
 1. Clonez le repository :
 
 ```bash
-git clone https://github.com/votre-username/TroovTesting.git
+git clone https://github.com/dryyss/TroovTesting.git
 cd TroovTesting
 ```
 
